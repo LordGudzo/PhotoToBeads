@@ -14,3 +14,5 @@ Create a convenient tool for crafters that allows users to:
 - hobby craft communities;
 - users of Perler / Hama / Miyuki / Preciosa beads;
 - age: 25–60 years;
+
+1. I read about imageURI https://ngengesenior.medium.com/pick-image-from-gallery-in-jetpack-compose-5fa0d0a8ddaf
