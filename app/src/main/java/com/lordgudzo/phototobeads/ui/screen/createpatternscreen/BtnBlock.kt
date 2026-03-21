@@ -1,6 +1,10 @@
 package com.lordgudzo.phototobeads.ui.screen.createpatternscreen
 
+import android.content.Context
+import android.content.Intent
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -14,23 +18,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.lordgudzo.phototobeads.domain.usecase.ImageCropUseCase
 import com.lordgudzo.phototobeads.ui.components.PrimaryActionButton
+import java.io.File
+
 
 @Composable
-fun BtnBlock(viewModel: CreatePatternViewModel) {
-    val step = viewModel.activeStep
-
-    when(step) {
+fun BtnBlock(
+    viewModel: CreatePatternViewModel,
+    cropLauncher: ActivityResultLauncher<Intent>,
+    context: Context
+) {
+    when (viewModel.activeStep) {
         1 -> StepOneAddImage(viewModel)
-        2 -> StepTwoCropImage(viewModel)
+        2 -> StepTwoCropImage(viewModel, cropLauncher, context)
 
         else -> StepOneAddImage(viewModel)
     }
-
-
-
-
-
 }
 
 @Composable
@@ -39,7 +43,7 @@ private fun StepOneAddImage(viewModel: CreatePatternViewModel) {
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri ->
-            uri?.let { viewModel.updateSelectedImageUri(it) }
+            uri?.let { viewModel.updateImageUri(it) }
         }
     )
     //<editor-fold desc="BTN-field">
@@ -57,7 +61,7 @@ private fun StepOneAddImage(viewModel: CreatePatternViewModel) {
             {})
 
 
-        if (viewModel.selectedImageUri != null) {
+        if (viewModel.imageUri != null) {
             Spacer(modifier = Modifier.padding(8.dp))
             PrimaryActionButton(
                 "Next: Crop Image",
@@ -69,13 +73,54 @@ private fun StepOneAddImage(viewModel: CreatePatternViewModel) {
         }
     }
 }
+
 @Composable
-private fun StepTwoCropImage(viewModel: CreatePatternViewModel) {
+private fun StepTwoCropImage(
+    viewModel: CreatePatternViewModel,
+    cropLauncher: ActivityResultLauncher<Intent>,
+    context: Context
+) {
+    val sourceUri = viewModel.imageUri ?: return
+    val imageCropUseCase = ImageCropUseCase()
+
     Column {
+        Spacer(modifier = Modifier.padding(45.dp))
         PrimaryActionButton(
-            "Next: Setting",
+            "Crop Image",
             Icons.AutoMirrored.Filled.ArrowForward,
-            color = MaterialTheme.colorScheme.secondary,
-            {viewModel.changeActiveStep(3)})
+            color = MaterialTheme.colorScheme.secondary
+        ) {
+            try {
+                // Create temp files in cacheDir (UI/ViewModel responsibility)
+                val sourceFile = File(context.cacheDir, "source_${System.currentTimeMillis()}.jpg")
+                val destFile = File(context.cacheDir, "cropped_${System.currentTimeMillis()}.jpg")
+
+                // Open InputStream in UI, pass to UseCase
+                context.contentResolver.openInputStream(sourceUri)?.use { inputStream ->
+                    val success = imageCropUseCase.copyInputStreamToFile(inputStream, sourceFile)
+                    if (!success) {
+                        Toast.makeText(context, "Cannot load image", Toast.LENGTH_SHORT).show()
+                        return@PrimaryActionButton
+                    }
+                } ?: run {
+                    Toast.makeText(context, "Cannot open image", Toast.LENGTH_SHORT).show()
+                    return@PrimaryActionButton
+                }
+
+                // Save sourceFile to ViewModel for later cleanup
+                viewModel.setSourceTempFile(sourceFile)
+
+                // Create UCrop object (UseCase is pure)
+                val uCrop = imageCropUseCase.createCropIntent(sourceFile, destFile)
+                cropLauncher.launch(uCrop.getIntent(context))
+            } catch (e: Exception) {
+                Toast.makeText(context, "Error preparing crop", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 }
+
+
+
+
+

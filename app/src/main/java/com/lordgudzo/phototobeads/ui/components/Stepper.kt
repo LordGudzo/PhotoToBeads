@@ -1,6 +1,5 @@
 package com.lordgudzo.phototobeads.ui.components
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,7 +31,7 @@ fun Stepper(
     totalSteps: Int = 4,
     onStepClick: (Int) -> Unit = {}
 ) {
-    Log.d("TEST", "Stepper: $currentStep")
+
     Row(
         modifier = Modifier
             .fillMaxWidth()

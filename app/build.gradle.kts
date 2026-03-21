@@ -37,12 +37,16 @@ android {
     buildFeatures {
         compose = true
     }
+
 }
 
 dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")
     implementation("androidx.compose.material:material-icons-extended:1.6.0")
     implementation(libs.coil.compose)
+    implementation("com.github.yalantis:ucrop:2.2.11-native")
+    implementation("androidx.transition:transition:1.5.0")
+    implementation("androidx.appcompat:appcompat:1.6.1")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

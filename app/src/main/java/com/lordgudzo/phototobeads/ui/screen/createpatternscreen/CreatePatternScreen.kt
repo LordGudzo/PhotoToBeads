@@ -1,5 +1,7 @@
 package com.lordgudzo.phototobeads.ui.screen.createpatternscreen
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,10 +15,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 
@@ -24,6 +26,14 @@ import coil.compose.rememberAsyncImagePainter
 @Composable
 fun CreatePatternScreen() {
     val viewModel: CreatePatternViewModel = viewModel()
+    val context = LocalContext.current
+
+    //<editor-fold desc="Launcher for get results from uCrop">
+    val cropLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result -> viewModel.handleCropResult(result, context) }
+    //</editor-fold>
+
 
     //<editor-fold desc="UI">
     Column(
@@ -32,16 +42,9 @@ fun CreatePatternScreen() {
             .padding(8.dp)
     ) {
         Header(viewModel)
+        DescriptionBlock(viewModel)
 
-        //<editor-fold desc="Description block">
-        Spacer(modifier = Modifier.padding(15.dp))
-        Text("Select Photo", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.padding(5.dp))
-        Text("Choose an image to convert into a bead pattern", fontSize = 16.sp)
-        Spacer(modifier = Modifier.padding(15.dp))
-        //</editor-fold>
-
-        //<editor-fold desc="Image Field">
+        //<editor-fold desc="ImageBlock">
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
@@ -50,19 +53,20 @@ fun CreatePatternScreen() {
             shape = MaterialTheme.shapes.medium
         ) {
             Box(contentAlignment = Alignment.Center) {
-                viewModel.selectedImageUri?.let { uri ->
+                viewModel.imageUri?.let {
                     Image(
-                        painter = rememberAsyncImagePainter(uri),
+                        painter = rememberAsyncImagePainter(it),
                         contentDescription = "Selected Image",
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
                     )
                 } ?: Text("No image selected")
             }
         }
-        Spacer(modifier = Modifier.padding(15.dp))
         //</editor-fold>
 
-        BtnBlock(viewModel)
+        Spacer(modifier = Modifier.padding(15.dp))
+        BtnBlock(viewModel, cropLauncher, context)
     }
     //</editor-fold>
 }
