@@ -3,7 +3,13 @@ package com.lordgudzo.phototobeads.data.storage.createpatternstorage
 import android.net.Uri
 
 interface CreatePatternStorageInterface {
+    // Take Uri content// -> save to cache -> return Uri file//
     fun saveTempImage(uri: Uri): Uri?
+
+
     fun getTempImage(): Uri?
-    fun clearCash()
+
+    fun createTempCroppedImageUri() : Uri
+    fun saveCropResult(resultUri: Uri): Uri
+
 }

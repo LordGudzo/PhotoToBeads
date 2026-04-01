@@ -20,7 +20,7 @@ fun DescriptionBlock(viewModel: CreatePatternViewModel) {
 }
 
 @Composable
-fun StepOneAddImage() {
+private fun StepOneAddImage() {
     Spacer(modifier = Modifier.padding(15.dp))
     Text("Select Photo", fontSize = 18.sp, fontWeight = FontWeight.Bold)
     Spacer(modifier = Modifier.padding(5.dp))
@@ -29,7 +29,7 @@ fun StepOneAddImage() {
 }
 
 @Composable
-fun StepTwoCropImage() {
+private fun StepTwoCropImage() {
     Spacer(modifier = Modifier.padding(15.dp))
     Text("Crop Image", fontSize = 18.sp, fontWeight = FontWeight.Bold)
     Spacer(modifier = Modifier.padding(5.dp))
