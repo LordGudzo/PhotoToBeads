@@ -18,7 +18,8 @@ Create a convenient tool for crafters that allows users to:
 
 # I read about:
 1. imageURI https://ngengesenior.medium.com/pick-image-from-gallery-in-jetpack-compose-5fa0d0a8ddaf
-2. uCrop https://github.com/yalantis/ucrop and GPT
+2. uCrop https://github.com/yalantis/ucrop, GPT and https://github.com/ArtsiomHalachkin/photo-editor-kotlin
+3. 
 
 
 
