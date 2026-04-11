@@ -15,7 +15,6 @@ fun DescriptionBlock(viewModel: CreatePatternViewModel) {
         1 -> StepOneAddImage()
         2 -> StepTwoCropImage()
 
-        else -> StepOneAddImage()
     }
 }
 

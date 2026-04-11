@@ -70,6 +70,7 @@ fun CreatePatternScreen() {
         DescriptionBlock(viewModel)
 
         ImageBlock(
+            bitmap = viewModel.resultBitmap,
             viewModel.patternState.value.imageUri,
             modifier = Modifier.weight(1f)
         )

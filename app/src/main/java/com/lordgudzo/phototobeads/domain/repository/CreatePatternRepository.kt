@@ -1,6 +1,8 @@
 package com.lordgudzo.phototobeads.domain.repository
 
+import android.graphics.Bitmap
 import android.net.Uri
+import com.lordgudzo.phototobeads.domain.model.BeadColor
 
 interface CreatePatternRepository {
     /**
@@ -13,5 +15,9 @@ interface CreatePatternRepository {
 
     fun createCroppedImageUri() : Uri
     fun saveCropResult(resultUri: Uri) : Uri
+
+    fun getBitMapWithSize(gridSize: Int): Bitmap
+
+    fun getPalette(palette: String): List<BeadColor>
 
 }

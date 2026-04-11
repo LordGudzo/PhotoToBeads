@@ -1,5 +1,6 @@
 package com.lordgudzo.phototobeads.data.storage.createpatternstorage
 
+import android.graphics.Bitmap
 import android.net.Uri
 
 interface CreatePatternStorageInterface {
@@ -12,4 +13,5 @@ interface CreatePatternStorageInterface {
     fun createTempCroppedImageUri() : Uri
     fun saveCropResult(resultUri: Uri): Uri
 
+    fun getBitMapWithSize(gridSize: Int): Bitmap
 }
