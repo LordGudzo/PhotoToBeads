@@ -10,6 +10,8 @@ data class BeadColor(
     val g: Int,
     val b: Int
 ) {
+    val colorInt: Int
+        get() = Color.rgb(r, g, b)
     fun toLabPoint(): LabPoint {
         val lab = DoubleArray(3)
         ColorUtils.RGBToLAB(r, g, b, lab)
