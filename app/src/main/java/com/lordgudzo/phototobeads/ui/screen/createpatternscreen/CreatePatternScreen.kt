@@ -7,6 +7,9 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -14,6 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.lordgudzo.phototobeads.domain.model.PatternResult
 import com.yalantis.ucrop.UCrop
 
 
@@ -64,22 +68,55 @@ fun CreatePatternScreen() {
         modifier = Modifier
             .fillMaxSize()
             .padding(8.dp)
+            .navigationBarsPadding()
     ) {
         HeaderBlock(viewModel)
 
         DescriptionBlock(viewModel)
 
-        ImageBlock(
-            bitmap = viewModel.resultBitmap,
-            viewModel.patternState.value.imageUri,
-            modifier = Modifier.weight(1f)
-        )
+        if (viewModel.patternState.value.step == 4 && viewModel.patternResult != null) {
+            // 🔥 Zoomable canvas вместо bitmap
+            PatternGridScreen(
+                result = viewModel.patternResult!!,
+                modifier = Modifier.weight(1f)
+            )
+        } else {
+            ImageBlock(
+                bitmap = null,
+                imageUri = viewModel.patternState.value.imageUri,
+                modifier = Modifier.weight(1f)
+            )
+
+        }
 
         BtnBlock(viewModel, galleryLauncher, cropLauncher, context)
     }
     //</editor-fold>
 
 }
+
+@Composable
+fun PatternGridScreen(
+    result: PatternResult,
+    modifier: Modifier = Modifier  // ← добавляем
+) {
+    Column(modifier = modifier) { // ← применяем
+        ZoomablePatternCanvas(
+            result = result,
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+        )
+        PalettePanel(
+            result = result,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+        )
+    }
+}
+
+
 
 @Preview(showBackground = true)
 @Composable

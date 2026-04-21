@@ -222,7 +222,7 @@ fun StepThreeSettings(
             Icons.AutoMirrored.Filled.ArrowForward,
             color = MaterialTheme.colorScheme.secondary,
             {
-                viewModel.setBitMap()
+                viewModel.generatePattern()
                 viewModel.onStepChanged(4)
             })
     }

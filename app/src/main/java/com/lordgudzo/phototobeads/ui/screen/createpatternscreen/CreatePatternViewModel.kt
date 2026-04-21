@@ -7,7 +7,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import com.lordgudzo.phototobeads.domain.imageprocessing.PatternGridRenderer
 import com.lordgudzo.phototobeads.domain.model.CropRequest
+import com.lordgudzo.phototobeads.domain.model.PatternResult
 import com.lordgudzo.phototobeads.domain.usecase.CropImageUseCase
 import com.lordgudzo.phototobeads.domain.usecase.GeneratingPatternForBeadsUseCase
 import com.lordgudzo.phototobeads.domain.usecase.GetImageFromGalleryUseCase
@@ -86,16 +88,16 @@ class CreatePatternViewModel(
     }
     //</editor-fold>
 
-    var resultBitmap by mutableStateOf<Bitmap?>(null)
+    // CreatePatternViewModel.kt
+    var patternResult by mutableStateOf<PatternResult?>(null)
         private set
 
-    fun setBitMap() {
-        resultBitmap = generatingPattern.execute(
+    fun generatePattern() {
+        patternResult = generatingPattern.execute(
             gridSize = _settingsState.value.gridSize,
             colorCount = _settingsState.value.colorCount,
             ditherStrength = _settingsState.value.ditherStrength,
             palette = _settingsState.value.selectedPalette
-
         )
     }
 }

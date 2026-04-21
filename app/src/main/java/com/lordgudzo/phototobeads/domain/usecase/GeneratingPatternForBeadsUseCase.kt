@@ -2,10 +2,10 @@ package com.lordgudzo.phototobeads.domain.usecase
 
 import android.graphics.Bitmap
 import android.util.Log
+import com.lordgudzo.phototobeads.domain.imageprocessing.BilateralFilter
 import com.lordgudzo.phototobeads.domain.imageprocessing.BitMapToLabArray
 import com.lordgudzo.phototobeads.domain.imageprocessing.FloydSteinbergDither
 import com.lordgudzo.phototobeads.domain.imageprocessing.KMeans
-import com.lordgudzo.phototobeads.domain.imageprocessing.MedianFilter
 import com.lordgudzo.phototobeads.domain.imageprocessing.SelectLabColor
 import com.lordgudzo.phototobeads.domain.model.BeadColor
 import com.lordgudzo.phototobeads.domain.model.LabPoint
@@ -22,27 +22,26 @@ class GeneratingPatternForBeadsUseCase(
         colorCount: Int,
         ditherStrength: Float = 0.7f,
         palette: String = "Preciosa",
-        //smoothing: how many times we apply the Median filter check step 2 MedianFilter() description
-        smoothing: Int = 1
-    ): Bitmap                                   //: PatternResult = withContext(Dispatchers.Default)
+    ): PatternResult              // = withContext(Dispatchers.Default)
     {
 
         // ======== 0. Validate input ========
         require(gridSize in 50..500) { "gridSize must be 50..500" }
         require(colorCount in 2..100) { "colorCount must be 2..100" }
         require(ditherStrength in 0f..1f) { "ditherStrength must be 0..1" }
-//        require(fullThreadPalette.isNotEmpty()) { "Thread palette cannot be empty" }
+
 
         // ======== 1. Resize ======== Image resize as square with width*height gridSize*gridSize
         val reSizedBitMap: Bitmap = createRepository.getBitMapWithSize(gridSize)
 
         // ======== 2. Smooth ========
 
-        val smoothed: Bitmap = if (smoothing > 0) {
-            val filtered = MedianFilter().apply(reSizedBitMap, smoothing)
-            // Принудительно возвращаем к нужному размеру
-            Bitmap.createScaledBitmap(filtered, gridSize, gridSize, true)
-        } else reSizedBitMap
+        val smoothed: Bitmap = BilateralFilter().apply(
+            bitmap = reSizedBitMap,
+            sigmaSpace = 2.0,   // radius of blur
+            sigmaColor = 25.0   // edge sensitivity — lower = sharper edges preserved
+        )
+
 
         // ======== 3. Convert to LAB ========
         val labPixels: Array<LabPoint> = BitMapToLabArray().apply(smoothed)
@@ -79,19 +78,7 @@ class GeneratingPatternForBeadsUseCase(
         val cleanedIndices =
             fastMajorityFilter(ditheredIndices, gridSize, gridSize, selectedColors.size)
         // ======== 10. Build result ========
-
-
-        val test = buildPatternResult(ditheredIndices, gridSize, selectedColors)
-
-
-        //   val result: Bitmap = render(test)
-        val debugBitmap = renderFromLab(
-            labPixels,
-            selectedColors.map { it.toLabPoint() },
-            selectedColors
-        )
-
-        return render(test)
+        return buildPatternResult(cleanedIndices, gridSize, selectedColors)
 
     }
 
@@ -149,64 +136,6 @@ class GeneratingPatternForBeadsUseCase(
         while (result.size < count) result.add("X${result.size}")
         return result
     }
-
-    fun render(result: PatternResult): Bitmap {
-
-        val bitmap = Bitmap.createBitmap(
-            result.width,
-            result.height,
-            Bitmap.Config.ARGB_8888
-        )
-
-        for (y in 0 until result.height) {
-            for (x in 0 until result.width) {
-                val idx = y * result.width + x
-                val colorIndex = result.indices[idx]
-                val color = result.palette[colorIndex]
-
-                bitmap.setPixel(x, y, color.colorInt)
-            }
-        }
-
-        return bitmap
-    }
-
-    private fun renderFromLab(
-        labPixels: Array<LabPoint>,
-        paletteLab: List<LabPoint>,
-        palette: List<BeadColor>
-    ): Bitmap {
-
-        val width = kotlin.math.sqrt(labPixels.size.toDouble()).toInt()
-        val height = width
-
-        val result = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-
-        for (i in labPixels.indices) {
-            val p = labPixels[i]
-
-            var bestIdx = 0
-            var bestDist = Double.MAX_VALUE
-
-            for (j in paletteLab.indices) {
-                val d = p.checkLabPointDistance(paletteLab[j])
-                if (d < bestDist) {
-                    bestDist = d
-                    bestIdx = j
-                }
-            }
-
-            result.setPixel(
-                i % width,
-                i / width,
-                palette[bestIdx].colorInt
-            )
-        }
-
-        return result
-    }
-
-
 }
 
 

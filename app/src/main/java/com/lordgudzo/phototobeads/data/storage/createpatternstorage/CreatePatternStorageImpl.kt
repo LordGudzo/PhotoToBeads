@@ -69,9 +69,7 @@ class CreatePatternStorageImpl(
         return ImageDecoder().decodeSampledBitmap(cachedUri!!, gridSize, gridSize, context)!!
     }
 
-    fun getPreviewImage(reqWidth: Int, reqHeight: Int) {
 
-    }
 
     private fun clearCash() {
         cachedUri?.let {

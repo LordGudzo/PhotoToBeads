@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import androidx.core.graphics.scale
 
 /**
  * Decode image from Uri with smaller size.
@@ -20,27 +21,33 @@ import android.net.Uri
 class ImageDecoder {
 
     fun decodeSampledBitmap(uri: Uri, reqWidth: Int, reqHeight: Int, context: Context): Bitmap? {
-        // Used to open image data by Uri (from gallery or other apps)
         val resolver = context.contentResolver
 
-        // Step 1: get image size
+        // Step 1: read size only
         val options = BitmapFactory.Options().apply {
-            inJustDecodeBounds = true  // Tell system: don't load bitmap, only read image size (width and height)
+            inJustDecodeBounds = true
         }
         resolver.openInputStream(uri)?.use {
-            //Decode image but don't create bitmap, only fill options with size
             BitmapFactory.decodeStream(it, null, options)
         }
 
-        // Step 2: calculate scale factor
+        // Step 2: calculate rough scale (powers of 2)
         options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight)
+        options.inJustDecodeBounds = false
 
-        // Step 3: decode real bitmap with scale
-        options.inJustDecodeBounds = false //close command to option only read width and height
-
-        //Now decode real bitmap using calculated scale (inSampleSize)
-        return resolver.openInputStream(uri)?.use {
+        // Step 3: decode rough bitmap
+        val roughBitmap = resolver.openInputStream(uri)?.use {
             BitmapFactory.decodeStream(it, null, options)
+        } ?: return null
+
+        // Step 4: precise scale to exact reqWidth x reqHeight
+        // filter=true = bilinear interpolation, much better than nearest neighbor
+        return if (roughBitmap.width == reqWidth && roughBitmap.height == reqHeight) {
+            roughBitmap // already exact, skip
+        } else {
+            val precise = roughBitmap.scale(reqWidth, reqHeight)
+            roughBitmap.recycle() // free memory from rough bitmap
+            precise
         }
     }
 
