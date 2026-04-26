@@ -1,4 +1,4 @@
-package com.lordgudzo.phototobeads.ui.screen.createpatternscreen
+package com.lordgudzo.phototobeads.ui.screen.createpatternscreen.blocks
 
 import android.content.Context
 import android.content.Intent
@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.lordgudzo.phototobeads.domain.model.CropRequest
 import com.lordgudzo.phototobeads.ui.components.PrimaryActionButton
+import com.lordgudzo.phototobeads.ui.screen.createpatternscreen.CreatePatternViewModel
 import com.yalantis.ucrop.UCrop
 import kotlin.math.roundToInt
 
@@ -55,7 +56,6 @@ private fun StepOneAddImage(
     viewModel: CreatePatternViewModel,
     galleryLauncher: ManagedActivityResultLauncher<String, Uri?>
 ) {
-    //<editor-fold desc="BTN-field">
     Column {
         PrimaryActionButton(
             "Choose from Gallery",
@@ -179,10 +179,10 @@ fun StepThreeSettings(
         }
         //</editor-fold>
 
-        //<editor-fold desc="Thread palette">
+        //<editor-fold desc="Beads palette">
         Column {
             Text(
-                text = "Thread palette",
+                text = "Beads palette",
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(bottom = 4.dp)
             )
@@ -215,7 +215,6 @@ fun StepThreeSettings(
         //</editor-fold>
 
         Spacer(modifier = Modifier.padding(10.dp))
-
 
         PrimaryActionButton(
             "Next: Get Result",

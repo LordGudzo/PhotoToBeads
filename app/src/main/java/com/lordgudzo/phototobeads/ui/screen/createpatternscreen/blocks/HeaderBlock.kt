@@ -1,4 +1,4 @@
-package com.lordgudzo.phototobeads.ui.screen.createpatternscreen
+package com.lordgudzo.phototobeads.ui.screen.createpatternscreen.blocks
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lordgudzo.phototobeads.ui.components.Stepper
+import com.lordgudzo.phototobeads.ui.screen.createpatternscreen.CreatePatternViewModel
 
 
 @Composable

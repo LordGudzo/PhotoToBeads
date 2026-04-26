@@ -1,4 +1,4 @@
-package com.lordgudzo.phototobeads.ui.screen.createpatternscreen
+package com.lordgudzo.phototobeads.ui.screen.createpatternscreen.blocks
 
 import android.graphics.Bitmap
 import android.net.Uri

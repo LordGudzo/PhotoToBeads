@@ -18,6 +18,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.lordgudzo.phototobeads.domain.model.PatternResult
+import com.lordgudzo.phototobeads.ui.screen.createpatternscreen.blocks.BtnBlock
+import com.lordgudzo.phototobeads.ui.screen.createpatternscreen.blocks.DescriptionBlock
+import com.lordgudzo.phototobeads.ui.screen.createpatternscreen.blocks.HeaderBlock
+import com.lordgudzo.phototobeads.ui.screen.createpatternscreen.blocks.ImageBlock
 import com.yalantis.ucrop.UCrop
 
 
@@ -75,7 +79,7 @@ fun CreatePatternScreen() {
         DescriptionBlock(viewModel)
 
         if (viewModel.patternState.value.step == 4 && viewModel.patternResult != null) {
-            // 🔥 Zoomable canvas вместо bitmap
+            // Zoomable canvas
             PatternGridScreen(
                 result = viewModel.patternResult!!,
                 modifier = Modifier.weight(1f)
